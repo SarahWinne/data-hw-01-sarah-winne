@@ -205,7 +205,8 @@ The output will be in the file markdown <code>.md</code> file with the same name
 These packages are already installed for you.
 You can load them by running the following in your Console:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dsbox)</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dsbox)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span></code></pre></div>
 </div>
 <div id="data" class="section level2">
 <h2>Data</h2>
@@ -258,8 +259,32 @@ have prices available, so they can’t be plotted.</span></span></p>
 <p>🧶 ✅ ⬆️ Knit, <em>commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.</em></p>
 <ol start="4" style="list-style-type: decimal">
 <li>Use a single pipeline to identity the neighbourhoods with the top five median listing prices. Then, in another pipeline filter the data for these five neighbourhoods and make ridge plots of the distributions of listing prices in these five neighbourhoods. In a third pipeline calculate the minimum, mean, median, standard deviation, IQR, and maximum listing price in each of these neighbourhoods. Use the visualisation and the summary statistics to describe the distribution of listing prices in the neighbourhoods. (Your answer will include three pipelines, one of which ends in a visualisation, and a narrative.)</li>
+</ol>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>edibnb <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">group_by</span>(neighbourhood) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">summarise</span>(<span class="at">median_price =</span> <span class="fu">median</span>(price, <span class="at">na.rm=</span><span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">arrange</span>(<span class="fu">desc</span>(median_price))</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>hoods <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;New Town&quot;</span>, <span class="st">&quot;Old Town&quot;</span>, <span class="st">&quot;West End&quot;</span>, <span class="st">&quot;Stockbridge&quot;</span>, <span class="st">&quot;Bruntsfield&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>edibnb <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">filter</span>(neighbourhood <span class="sc">%in%</span> hoods) <span class="sc">%&gt;%</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> price, <span class="at">y =</span> neighbourhood, <span class="at">fill =</span> neighbourhood)) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">geom_density_ridges</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>edibnb <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">filter</span>(neighbourhood <span class="sc">%in%</span> hoods) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">group_by</span>(neighbourhood) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">summarise</span>( <span class="at">min =</span> <span class="fu">min</span>(price, <span class="at">na.rm=</span>T), </span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>                    <span class="at">median =</span> <span class="fu">median</span>(price, <span class="at">na.rm=</span>T), </span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>                   <span class="at">stand.dev =</span> <span class="fu">sd</span>(price, <span class="at">na.rm=</span>T), </span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>                   <span class="at">IQR =</span> <span class="fu">IQR</span>(price, <span class="at">na.rm=</span>T), </span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>                   <span class="at">max =</span> <span class="fu">max</span>(price, <span class="at">na.rm=</span>T))</span></code></pre></div>
+<p>All of the prices graphed have a right skewed distribution.</p>
+<ol start="5" style="list-style-type: decimal">
 <li>Create a visualization that will help you compare the distribution of review scores (<code>review_scores_rating</code>) across neighbourhoods. You get to decide what type of visualisation to create and there is more than one correct answer! In your answer, include a brief interpretation of how Airbnb guests rate properties in general and how the neighbourhoods compare to each other in terms of their ratings.</li>
 </ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> edibnb, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> review_scores_rating, <span class="at">y =</span> neighbourhood, <span class="at">color =</span> neighbourhood)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() </span></code></pre></div>
+<p>In general there are a lot of positive ratings. There are areas ratings are more concentrated in the lower areas too, at 20, 40, 60, and 80, so they also tend to give relatively simple fraction ratings. The neighborhoods, like Leith or New Town, that have a larger number of ratings also have more negative ratings than the neighborhoods with smaller numbers, like Tollcross or Stockbridge.</p>
 <p>🧶 ✅ ⬆️ Knit, <em>commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you’re happy with the final state of your work.</em></p>
 <p><em>Save a pdf version and submit to moodle</em></p>
 </div>
